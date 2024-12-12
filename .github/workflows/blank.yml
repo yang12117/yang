@@ -1,0 +1,30 @@
+trigger:
+- none
+#- master
+ 
+pool:
+  vmImage: ubuntu-latest
+ 
+steps:
+- script: echo "test" > $(System.DefaultWorkingDirectory)/test.txt
+ 
+- task: CopyFiles@2
+  inputs:
+    Contents: |
+      $(System.DefaultWorkingDirectory)/test.txt
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+ 
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'maqingdi'
+    publishLocation: 'Container'
+ 
+- task: UniversalPackages@0
+  displayName: Publish a Universal Package
+  inputs:
+    command: publish
+    publishDirectory: '$(Build.ArtifactStagingDirectory)'
+    vstsFeedPublish: 'testpj1/maqingdi'
+    vstsFeedPackagePublish: 'testpkg'
+    packagePublishDescription: 'foobar'
